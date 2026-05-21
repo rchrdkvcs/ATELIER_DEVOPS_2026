@@ -125,8 +125,8 @@ Dans votre dépôt GitHub : **Settings → Secrets and variables → Actions →
 - ❌ Mettre votre authtoken Ngrok directement dans le `Dockerfile`, dans le workflow YAML, ou dans un fichier `.env` commité.
 - ❌ Faire un `docker run` sans `-d` puis se demander pourquoi l'étape suivante ne s'exécute jamais.
 - ❌ Faire un `sleep 120` **avant** de récupérer l'URL Ngrok (vous l'afficherez quand le tunnel sera fermé).
-- ❌ Garder le workflow `CICD.yml` existant tel quel : il déploie sur Alwaysdata via SSH, ce qui n'a aucun rapport avec l'objectif. **Supprimez-le ou remplacez-le.**
 - ❌ Lancer Flask en mode debug (`debug=True`) dans le conteneur — c'est un risque de sécurité en production.
+- ❌ Nommer votre workflow `CI.yml`, `CICD.yml`, `main.yml`… donnez-lui un nom **descriptif** (ex. `build-and-expose.yml`). Vous en aurez plusieurs aux exercices suivants ; chacun doit dire ce qu'il fait.
 
 ---
 
