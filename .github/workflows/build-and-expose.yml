@@ -1,0 +1,71 @@
+name: Build Docker image and expose with Ngrok
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  ngrok:
+    name: Build, run and expose
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t atelier-devops-flask:${{ github.sha }} .
+
+      - name: Run Flask container
+        run: |
+          docker run -d \
+            --name atelier-devops-flask \
+            -p 5000:5000 \
+            atelier-devops-flask:${{ github.sha }}
+
+      - name: Wait for Flask
+        run: |
+          for attempt in {1..30}; do
+            if curl -fsS http://localhost:5000/ >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+
+          docker logs atelier-devops-flask
+          exit 1
+
+      - name: Start Ngrok tunnel
+        run: |
+          docker run -d \
+            --name atelier-devops-ngrok \
+            --network host \
+            -e NGROK_AUTHTOKEN="${{ secrets.NGROK_AUTHTOKEN }}" \
+            ngrok/ngrok:latest \
+            http 5000
+
+      - name: Print public Ngrok URL
+        run: |
+          for attempt in {1..30}; do
+            public_url="$(curl -fsS http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url // empty')"
+
+            if [ -n "$public_url" ]; then
+              echo "Public Ngrok URL: $public_url"
+              echo "Exercise page: ${public_url}/exercices/"
+              exit 0
+            fi
+
+            sleep 1
+          done
+
+          docker logs atelier-devops-ngrok
+          exit 1
+
+      - name: Keep tunnel open for demo
+        run: sleep 120
+
+      - name: Cleanup containers
+        if: always()
+        run: |
+          docker rm -f atelier-devops-ngrok atelier-devops-flask 2>/dev/null || true
