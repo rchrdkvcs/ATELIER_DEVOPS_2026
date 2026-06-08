@@ -54,10 +54,44 @@ jobs:
           path: atelier-devops-flask.tar
           retention-days: 1
 
+  security:
+    name: Scan image and secrets
+    runs-on: ubuntu-latest
+    needs: docker-build
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download Docker image artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: atelier-devops-flask-image
+
+      - name: Load Docker image
+        run: docker load -i atelier-devops-flask.tar
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: atelier-devops-flask:${{ github.sha }}
+          severity: CRITICAL
+          exit-code: "1"
+          ignore-unfixed: true
+          scanners: vuln
+          pkg-types: os,library
+
+      - name: Scan repository secrets with Gitleaks
+        uses: gitleaks/gitleaks-action@v3
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   ngrok:
     name: Run and expose
     runs-on: ubuntu-latest
-    needs: docker-build
+    needs: security
     timeout-minutes: 5
 
     steps:
