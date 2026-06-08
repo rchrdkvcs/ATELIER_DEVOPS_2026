@@ -9,9 +9,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY __init__.py .
-COPY templates ./templates
+RUN useradd -m -u 1000 appuser
+
+COPY --chown=appuser:appuser __init__.py .
+COPY --chown=appuser:appuser templates ./templates
 
 EXPOSE 5000
+
+USER appuser
 
 CMD ["python", "__init__.py"]
