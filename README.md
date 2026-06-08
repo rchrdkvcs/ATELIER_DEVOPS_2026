@@ -148,6 +148,18 @@ pytest
 
 ---
 
+## Image publiée
+
+Après un run réussi sur `main`, l'image Docker est publiée sur GitHub Container Registry :
+
+```bash
+docker pull ghcr.io/rchrdkvcs/atelier_devops_2026:latest
+```
+
+Chaque commit publié dispose aussi d'un tag immuable `sha-<commit-court>`.
+
+---
+
 ## Ressources officielles
 
 Pas de copier-coller, allez à la source :
