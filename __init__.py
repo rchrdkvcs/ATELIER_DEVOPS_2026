@@ -1,17 +1,22 @@
 import os
 
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template
 
 app = Flask(__name__)
 
-@app.route('/', methods=['GET'])
-def hello_world():
-    return "<h2>Bonjour tout le monde !</h2><p>Pour accéder à vos exerices cliquez <a href='./exercices/'>Ici</a></p>"
 
-@app.route('/exercices/', methods=['GET'])
+@app.route("/", methods=["GET"])
+def hello_world():
+    return (
+        "<h2>Bonjour tout le monde !</h2>"
+        "<p>Pour accéder à vos exerices cliquez <a href='./exercices/'>Ici</a></p>"
+    )
+
+
+@app.route("/exercices/", methods=["GET"])
 def exercices():
-    return render_template('exercices.html')
+    return render_template("exercices.html")
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", "5000"))

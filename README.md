@@ -133,6 +133,21 @@ Dans cet ordre, sans en sauter :
 
 ---
 
+## Qualité locale
+
+Dans un Codespace fraîchement ouvert, installez les dépendances de développement puis lancez les vérifications :
+
+```bash
+python -m pip install -r requirements-dev.txt
+ruff check .
+ruff format --check .
+pytest
+```
+
+`pytest` exécute les tests Flask et vérifie aussi que la couverture reste au-dessus de 50 %.
+
+---
+
 ## Ressources officielles
 
 Pas de copier-coller, allez à la source :
